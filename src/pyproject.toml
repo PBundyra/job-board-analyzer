@@ -5,9 +5,9 @@ description = ""
 authors = ["Patryk Bundyra <pbundyra@covidgenomics.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7.1"
 streamlit = "^1.4.0"
-pandas = "^1.3.5"
+pandas = "^1.3.4"
 psycopg2-binary = "^2.9.3"
 python-dotenv = "^0.19.2"
 streamlit-echarts = "^0.4.0"

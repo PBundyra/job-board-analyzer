@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from configparser import ConfigParser
 import psycopg2
+import streamlit as st
 
 def config(filename='./database.ini', section='postgresql'):
     # create a parser
@@ -19,4 +20,7 @@ def config(filename='./database.ini', section='postgresql'):
 
     return db
 
+@st.cache(allow_output_mutation=True, hash_funcs={"_thread.RLock": lambda _: None})
+def init_connection():
+    return psycopg2.connect(**st.secrets["postgres"])
 

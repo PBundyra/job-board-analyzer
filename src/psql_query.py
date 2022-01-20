@@ -1,6 +1,6 @@
 import psycopg2
 import pandas as pd
-from config import config
+from config import config, init_connection
 
 
 def query(query):
@@ -8,10 +8,10 @@ def query(query):
     df = pd.DataFrame
     try:
         # read connection parameters
-        params = config()
+        # params = config()
         # connect to the PostgreSQL server
         print('Connecting to the PostgreSQL database...')
-        conn = psycopg2.connect(**params)
+        conn = init_connection()
         # create a cursor
         cur = conn.cursor()
         # execute a statement

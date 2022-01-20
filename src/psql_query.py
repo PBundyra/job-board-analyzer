@@ -3,9 +3,9 @@ import pandas as pd
 from config import config
 
 
-
 def query(query):
     conn = None
+    df = pd.DataFrame
     try:
         # read connection parameters
         params = config()
@@ -18,11 +18,13 @@ def query(query):
         cur.execute(query)
         # display the PostgreSQL database server version
         fetched_data = cur.fetchall()
-        df = pd.DataFrame(fetched_data, columns=["name", "count"]) \
+        df = pd.DataFrame(fetched_data) \
             # close the communication with the PostgreSQL
         cur.close()
 
     except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    except Exception as error:
         print(error)
     finally:
         if conn is not None:
@@ -48,3 +50,11 @@ COUNT_BY_EXP = """
             FROM job_experience_level
             GROUP BY experience_level
             ORDER BY count(*);"""
+
+
+def avg_sal_by_tech_query(tech):
+    return f"""
+            SELECT (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
+            FROM job_employment_type
+            WHERE offer_id IN (SELECT offer_id FROM job_category WHERE category = '{tech}');
+    """

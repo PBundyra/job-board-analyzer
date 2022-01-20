@@ -1,11 +1,11 @@
-all_langs = ['ABAP', 'android', 'angular', 'ansible', 'AWS', 'Azure', 'Beckhoff PLC', 'BizTalk', 'C', 'C++', 'C#',
-             'CI/CD', 'Cypress', 'Docker', 'Drupal', 'Elixir', 'Flutter', 'GCP', 'Go', 'Hadoop', 'HTML', 'iOS', 'Java',
+all_langs = ['ABAP', 'Android', 'Angular', 'Ansible', 'AWS', 'Azure', 'Beckhoff PLC', 'BizTalk', 'C', 'C++', 'C#',
+             'Cypress', 'Docker', 'Drupal', 'Elixir', 'Flutter', 'GCP', 'Go', 'Hadoop', 'HTML', 'iOS', 'Java',
              'Javascript', 'Jenkins', 'Jira', 'Kotlin', 'Kubernetes', 'Magento', '.Net', 'Node.js', 'Odoo', 'PHP',
-             'PowerBuilder', 'Python', 'React', 'Ruby', 'Rust', 'Salesforce', 'Scala', 'selenium', 'Spark', 'Spring',
+             'PowerBuilder', 'Python', 'React', 'Ruby', 'Rust', 'Salesforce', 'Scala', 'Selenium', 'Spark', 'Spring',
              'SQL', 'svelte', 'Terraform', 'TestRail', 'Typescript', 'Unity', 'Unreal Engine 4', 'Vue.js',
-             'WebdriverIO', 'WordPress', 'x++', 'Xamarin.Forms', 'xforms/orbeon']
+             'WebdriverIO', 'WordPress', 'X++', 'Xamarin.Forms', 'xforms/orbeon']
 
-default_langs = ['Java', 'Javascript', 'Python', 'PHP', '.NET']
+default_langs = ['java', 'javascript', 'python', 'php', '.net']
 
 all_locs = ['Akwizgran', 'Amsterdam', 'Andrychów', 'Athlone', 'Barcelona', 'Basel', 'Bath UK', 'Berlin',
             'Biała Podlaska', 'Białystok', 'Bielsko-Biała', 'Boca Raton', 'Bochnia', 'Bolechowo', 'Bolszewo', 'Boston',

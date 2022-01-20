@@ -17,3 +17,4 @@ if __name__ == '__main__':
     st.altair_chart(charts.top_exp_lvl(), use_container_width=True)
     st.altair_chart(charts.top_loc_chart(), use_container_width=True)
     st.altair_chart(charts.top_langs_chart(), use_container_width=True)
+    # st.altair_chart(charts.avg_sal_by_tech_chart(), use_container_width=True)

@@ -1,5 +1,6 @@
-.env
-poetry.lock
-database.ini
-out.txt
-.idea
+src/.env
+src/poetry.lock
+srcdatabase.ini
+src/out.txt
+src/.idea
+src/__pycache__

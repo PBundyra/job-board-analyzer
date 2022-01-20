@@ -32,3 +32,21 @@ all_exp_lvl = ['Trainee', 'Senior', 'Expert', 'Junior', 'Mid']
 
 default_exp_lvl = ['Trainee', 'Senior', 'Expert', 'Junior', 'Mid']
 
+query_langs = ['java', 'javascript', 'backend', 'testing', 'python', 'devops', 'php', 'net', 'mobile', 'frontend', 'pm',
+               'data', 'other', 'fullstack', 'support', 'analytics', '.net', 'ux', 'c', 'architecture', 'react',
+               'admin', 'ruby', 'security', 'angular', 'businessAnalyst', 'projectManager', 'android', 'scala', 'go',
+               'ios', 'c++', 'bigData', 'erp', 'html', 'embedded', 'businessIntelligence', 'itAdministrator',
+               'productManagement', 'aws', 'node', 'selenium', 'sql', 'artificialIntelligence', 'hr', 'agile',
+               'ruby on rails', 'React Native', 'game', 'sales', 'SQL', 'Flutter', 'Golang', 'jenkins', 'marketing',
+               'Salesforce', 'Node.js', 'html&css', 'linux', 'docker', 'golang', 'Azure', 'spark', 'Kotlin', 'gaming',
+               'Kubernetes', 'node.js', 'typescript', 'ReactNative', 'hadoop', 'ansible', 'c#', 'AWS', 'azure',
+               'react native', 'vue.js', 'NodeJS', 'API', 'Mobile', 'GCP', 'C#',
+               'HPQC / Zephyr or TestRail / SQL / JIRA / Agile', 'spring', 'Vue.js', 'unity', 'kotlin', 'WordPress',
+               'oracle', 'Cypress', 'PowerBuilder', 'blockchain', 'PLC', 'Pentester', 'Azure DevOps', 'CI/CD',
+               'laravel + vue.js', 'AWS/Kubernetes', 'Shopify', 'ServiceNow', 'Beckhoff PLC', 'C#/Java/Kotlin',
+               '.net core', 'Terraform', 'Test Engineering', 'WebdriverIO', 'Microsoft Azure', 'CICD', 'Openshift',
+               'WebMethods', 'BizTalk', 'Networking', 'jira', 'Low-code', 'ci', 'Test Automation', 'Cloud DevOps',
+               'xforms/orbeon', 'svelte', 'git', 'Drupal', 'Magento', 'Scala/Python', 'Junior Pentester',
+               'Unreal Engine 4', 'iOS', 'kubernetes', 'Database Protection', 'Sharepoint', 'database', 'rust', 'ABAP',
+               'x++', 'backoffice', 'SRE', 'no-code', 'Architecture', 'Cloud', 'RPA', 'OpenEdge', 'Odoo', 'Elixir',
+               'Xamarin.Forms', 'TestRail']

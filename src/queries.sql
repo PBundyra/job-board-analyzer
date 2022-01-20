@@ -8,7 +8,7 @@ group by city
 order by city;
 
 SELECT experience_level
-FROM job_exprience_level
+FROM job_experience_level
 group by experience_level
 order by experience_level;
 
@@ -24,3 +24,9 @@ SELECT max(employment_type), count(*)
 from job_employment_type
 group by employment_type
 order by employment_type;
+
+
+SELECT city, count(*)
+FROM job_location
+GROUP BY city
+ORDER BY count(*) DESC;

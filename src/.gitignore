@@ -1,0 +1,5 @@
+.env
+poetry.lock
+database.ini
+out.txt
+.idea

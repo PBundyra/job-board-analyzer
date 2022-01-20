@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import pandas as pd
 import streamlit as st
-import query
+import psql_query
 import charts
 import altair as alt
 

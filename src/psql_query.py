@@ -3,7 +3,7 @@ import pandas as pd
 from config import config, init_connection
 
 
-def query(query):
+def run_query(query):
     conn = None
     df = pd.DataFrame
     try:

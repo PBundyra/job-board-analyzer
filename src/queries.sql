@@ -47,3 +47,23 @@ SELECT cat, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary)
 FROM salaries
 GROUP BY cat
 HAVING count(cat) > 3;
+
+-- COUNT OFFERS
+SELECT count(*) from job_offer;
+
+-- AVG SALARY
+SELECT        (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
+FROM job_employment_type jet
+WHERE salary_currency = 'PLN';
+
+-- MED BY LOC
+WITH salaries(loc, salary) AS (SELECT jl.city,
+                                      (CAST(ROUND(salary_to) AS bigint) + CAST(ROUND(salary_from) AS bigint)) / 2
+                               FROM job_employment_type jet
+                                        FULL JOIN job_location jl ON jet.offer_id = jl.offer_id
+                               WHERE salary_currency = 'PLN')
+SELECT loc, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) as median
+FROM salaries
+GROUP BY loc
+HAVING count(loc) > 3
+ORDER BY median desc;

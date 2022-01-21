@@ -13,7 +13,7 @@ import content
 if __name__ == '__main__':
     content.init_config()
     # st.balloons()
-    st.experimental_memo.clear()
+    # st.experimental_memo.clear()
 
 
     form = st.sidebar.form(key="Filtry")
@@ -32,4 +32,8 @@ if __name__ == '__main__':
     else:
         content.default_state()
 
-
+    st.subheader("We would like to greet our professor at the University of Warsaw - prof. Murlak")
+    st.write("P.S. If you are prof. Murlak please click button the below")
+    ball = st.button("Hi prof. Murlak")
+    if ball:
+        st.balloons()

@@ -1,18 +1,19 @@
 import psycopg2
 import pandas as pd
 from config import init_connection
-from streamlit import session_state as stat
 import streamlit as st
 
+
+print('Connecting to the PostgreSQL database...')
 pool = init_connection()
 
 
-def basic_query(query: str):
+def basic_query(query: str) -> pd.DataFrame:
     df = pd.DataFrame
     conn = None
     cur = None
     try:
-        print('Connecting to the PostgreSQL database...')
+        print("Getting connection from the pool...")
         conn = pool.getconn()
         cur = conn.cursor()
         cur.execute(query)
@@ -29,12 +30,14 @@ def basic_query(query: str):
             cur.close()
         if conn is not None:
             pool.putconn(conn)
-            print('Database connection closed.')
+            print('Putting connection to the pull')
     return df
+
 
 @st.cache
 def get_offer_cnt():
     return basic_query(COUNT_OFFERS)[0][0]
+
 
 @st.cache
 def get_avg_salary():
@@ -54,6 +57,55 @@ def get_loc_list():
 @st.cache
 def get_tech_list():
     return basic_query(ALL_TECH)[0].tolist()
+
+
+@st.cache
+def top_med_by_exp(top: float):
+    percent = top / 100
+    return basic_query(f"""
+            WITH salaries(exp, salary) AS (SELECT jel.experience_level,
+                                                  (CAST(ROUND(salary_to) AS bigint) + CAST(ROUND(salary_from) AS bigint)) / 2
+                                           FROM job_employment_type jet
+                                                    FULL JOIN job_experience_level jel ON jet.offer_id = jel.offer_id
+                                           WHERE salary_currency = 'PLN')
+            SELECT exp, CAST(PERCENTILE_CONT({percent}) WITHIN GROUP (ORDER BY salary) AS bigint) AS median
+            FROM salaries
+            GROUP BY exp
+            HAVING count(exp) > 3
+            ORDER BY median desc;""")
+
+
+@st.cache
+def top_med_by_loc(top: float) -> pd.DataFrame:
+    percent = top / 100
+    return basic_query(f"""
+            WITH salaries(loc, salary) AS (SELECT jl.city,
+                                                  (CAST(ROUND(salary_to) AS bigint) + CAST(ROUND(salary_from) AS bigint)) / 2
+                                           FROM job_employment_type jet
+                                                    FULL JOIN job_location jl ON jet.offer_id = jl.offer_id
+                                           WHERE salary_currency = 'PLN')
+            SELECT loc, PERCENTILE_CONT({percent}) WITHIN GROUP (ORDER BY salary) AS median
+            FROM salaries
+            GROUP BY loc
+            HAVING count(loc) > 3
+            ORDER BY median DESC;""")
+
+
+@st.cache
+def top_med_by_exp(top: float) -> pd.DataFrame:
+    percent = top / 100
+    return basic_query(f"""
+            WITH salaries(exp, salary) AS (SELECT jel.experience_level,
+                                                  (CAST(ROUND(salary_to) AS bigint) + CAST(ROUND(salary_from) AS bigint)) / 2
+                                           FROM job_employment_type jet
+                                                    FULL JOIN job_experience_level jel ON jet.offer_id = jel.offer_id
+                                           WHERE salary_currency = 'PLN')
+            SELECT exp, PERCENTILE_CONT({percent}) WITHIN GROUP (ORDER BY salary) as median
+            FROM salaries
+            GROUP BY exp
+            HAVING count(exp) > 3
+            ORDER BY median desc;""")
+
 
 COUNT_BY_TECH = """
             SELECT category, count(*)

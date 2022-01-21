@@ -25,8 +25,8 @@ def get_chart(df: pd.DataFrame, title: str, axis_x_title: str) -> alt.Chart:
     )
 
 
-def get_group_chart(df: pd.DataFrame) -> alt.Chart:
-    return basic_query("XD")
+# def get_group_chart(df: pd.DataFrame) -> alt.Chart:
+#     return basic_query("XD")
 
 
 @st.experimental_memo

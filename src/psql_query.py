@@ -1,17 +1,19 @@
 import psycopg2
 import pandas as pd
-from config import config, init_connection
+from config import init_connection
+from streamlit import session_state as stat
 
 
-def run_query(query):
-    conn = None
+def run_query(query: str):
     df = pd.DataFrame
+    pool = init_connection()
+    conn = None
     try:
         # read connection parameters
         # params = config()
         # connect to the PostgreSQL server
         print('Connecting to the PostgreSQL database...')
-        conn = init_connection()
+        conn = pool.getconn()
         # create a cursor
         cur = conn.cursor()
         # execute a statement
@@ -21,6 +23,7 @@ def run_query(query):
         df = pd.DataFrame(fetched_data, columns=["name", "count"]) \
             # close the communication with the PostgreSQL
         cur.close()
+        pool.putconn(conn)
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -28,7 +31,7 @@ def run_query(query):
         print(error)
     finally:
         if conn is not None:
-            conn.close()
+            pool.putconn(conn)
             print('Database connection closed.')
     return df
 

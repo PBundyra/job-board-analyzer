@@ -54,24 +54,13 @@ def get_loc_list():
 
 
 @st.experimental_memo(ttl=600)
-def get_tech_list():
-    return basic_query(ALL_TECH)[0].tolist()
+def get_cat_list():
+    return basic_query(ALL_CAT)[0].tolist()
 
 
 @st.experimental_memo(ttl=600)
-def top_med_by_exp(top: float):
-    percent = top / 100
-    return basic_query(f"""
-            WITH salaries(exp, salary) AS (SELECT jel.experience_level,
-                                                  (CAST(ROUND(salary_to) AS bigint) + CAST(ROUND(salary_from) AS bigint)) / 2
-                                           FROM job_employment_type jet
-                                                    FULL JOIN job_experience_level jel ON jet.offer_id = jel.offer_id
-                                           WHERE salary_currency = 'PLN')
-            SELECT exp, CAST(PERCENTILE_CONT({percent}) WITHIN GROUP (ORDER BY salary) AS bigint) AS median
-            FROM salaries
-            GROUP BY exp
-            HAVING count(exp) > 3
-            ORDER BY median desc;""")
+def get_tech_list():
+    return basic_query(ALL_TECH)[0].tolist()
 
 
 @st.experimental_memo(ttl=600)
@@ -106,10 +95,18 @@ def top_med_by_exp(top: float) -> pd.DataFrame:
             ORDER BY median desc;""")
 
 
-COUNT_BY_TECH = """
+COUNT_BY_CAT = """
             SELECT category, count(*)
             FROM job_category
+            WHERE category IS NOT NULL
             GROUP BY category
+            ORDER BY count(*) DESC;"""
+
+COUNT_BY_TECH = """
+            SELECT technology, count(*)
+            FROM job_category
+            WHERE technology IS NOT NULL
+            GROUP BY technology
             ORDER BY count(*) DESC;"""
 
 COUNT_BY_LOC = """
@@ -141,6 +138,15 @@ AVG_BY_EXP = """
             ORDER BY (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2 DESC;"""
 
 AVG_BY_TECH = """
+            SELECT jc.technology, (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
+            FROM job_employment_type jet
+            FULL JOIN job_category jc on jet.offer_id = jc.offer_id
+            WHERE salary_currency = 'PLN'
+            GROUP BY jc.technology, jet.salary_currency
+            HAVING count(technology) > 3
+            ORDER BY (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2 DESC;"""
+
+AVG_BY_CAT = """
             SELECT jc.category, (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
             FROM job_employment_type jet
             FULL JOIN job_category jc on jet.offer_id = jc.offer_id
@@ -150,6 +156,17 @@ AVG_BY_TECH = """
             ORDER BY (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2 DESC;"""
 
 MED_BY_TECH = """
+            WITH salaries(tech, salary) AS (SELECT jc.technology, (CAST(ROUND(salary_to) AS bigint) + CAST(ROUND(salary_from) AS bigint)) / 2
+                                            FROM job_employment_type jet
+                                            FULL JOIN job_category jc ON jet.offer_id = jc.offer_id
+                                            WHERE salary_currency = 'PLN')
+            SELECT tech, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS median
+            FROM salaries
+            GROUP BY tech
+            HAVING count(tech) > 3
+            ORDER BY median DESC;"""
+
+MED_BY_CAT = """
             WITH salaries(cat, salary) AS (SELECT jc.category, (CAST(ROUND(salary_to) AS bigint) + CAST(ROUND(salary_from) AS bigint)) / 2
                                             FROM job_employment_type jet
                                             FULL JOIN job_category jc ON jet.offer_id = jc.offer_id
@@ -184,10 +201,10 @@ MED_BY_EXP = """
             HAVING count(exp) > 3
             ORDER BY median desc;"""
 
-COUNT_OFFERS = "SELECT count(*) FROM job_offer;"
+COUNT_OFFERS = """SELECT count(*) FROM job_offer;"""
 
 AVG_SALARY = """
-            SELECT(CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
+            SELECT (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
             FROM job_employment_type jet
             WHERE salary_currency = 'PLN';
             """
@@ -206,9 +223,16 @@ ALL_LOC = """
             HAVING count(city) > 3
             ORDER BY city;"""
 
-ALL_TECH = """
+ALL_CAT = """
             SELECT category
             FROM job_category
             GROUP BY category
             HAVING count(category) > 3
             ORDER BY category;"""
+
+ALL_TECH = """
+            SELECT technology
+            FROM job_category
+            GROUP BY technology
+            HAVING count(technology) > 3
+            ORDER BY technology;"""

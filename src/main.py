@@ -9,18 +9,16 @@ import config
 from streamlit_echarts import st_echarts
 import content
 
-# def filters() -> st.form:
-#
-#     return form
-
 
 if __name__ == '__main__':
     content.init_config()
-    st.balloons()
+    # st.balloons()
+    st.experimental_memo.clear()
+
 
     form = st.sidebar.form(key="Filtry")
     languages = psql_query.get_tech_list()
-    langs = form.multiselect(label="Languages",
+    langs = form.multiselect(label="Technology",
                              options=psql_query.get_tech_list())
     loc = form.multiselect(label="Localization",
                            options=psql_query.get_loc_list())
@@ -33,4 +31,5 @@ if __name__ == '__main__':
         st.write("Essa")
     else:
         content.default_state()
+
 

@@ -2,8 +2,6 @@ import altair as alt
 from psql_query import run_query, COUNT_BY_LOC, COUNT_BY_TECH, COUNT_BY_EXP, AVG_BY_LOC, AVG_BY_EXP, AVG_BY_TECH, \
     MED_BY_TECH
 import pandas as pd
-from streamlit_echarts import st_echarts
-import plotly.express as px
 
 
 def get_chart(df: pd.DataFrame, title: str, axis_x_title: str) -> alt.Chart:
@@ -60,45 +58,45 @@ def med_sal_by_tech() -> alt.Chart:
     return get_chart(df, title="Median offered salary by technology", axis_x_title="Median salary")
 
 
-def pie_chart():
-    df = run_query(AVG_BY_EXP)
-    l = [{'name': dicti['name'], 'value': dicti['count']} for dicti in df.to_dict('records')]
-
-    option = {
-        "toolpit": {
-            "trigger": "item",
-        },
-        "legend": {"top": "bottom"},
-        # "toolbox": {
-        #     "show": False,
-        #     "feature": {
-        #         "mark": {"show": False},
-        #         "dataView": {"show": False, "readOnly": False},
-        #         "restore": {"show": False},
-        #         "saveAsImage": {"show": False},
-        #     },
-        # },
-        "series": [
-            {
-                "name": "Demand for employees depending on experience",
-                "type": "pie",
-                "radius": [15, 130],
-                "center": ["50%", "50%"],
-                "roseType": "area",
-                "itemStyle": {"borderRadius": 5},
-                "label": {
-                    "show": False
-                },
-                "emphasis": {
-                    "label": {
-                        "show": False
-                    }
-                },
-                "data": l,
-            }
-        ],
-        "color": ['#9f3632', '#c16840', '#eabe83', '#edd3ab', '#eedbbd']
-    }
-    return st_echarts(
-        options=option, height="300px",
-    )
+# def pie_chart():
+#     df = run_query(AVG_BY_EXP)
+#     l = [{'name': dicti['name'], 'value': dicti['count']} for dicti in df.to_dict('records')]
+#
+#     option = {
+#         "toolpit": {
+#             "trigger": "item",
+#         },
+#         "legend": {"top": "bottom"},
+#         # "toolbox": {
+#         #     "show": False,
+#         #     "feature": {
+#         #         "mark": {"show": False},
+#         #         "dataView": {"show": False, "readOnly": False},
+#         #         "restore": {"show": False},
+#         #         "saveAsImage": {"show": False},
+#         #     },
+#         # },
+#         "series": [
+#             {
+#                 "name": "Demand for employees depending on experience",
+#                 "type": "pie",
+#                 "radius": [15, 130],
+#                 "center": ["50%", "50%"],
+#                 "roseType": "area",
+#                 "itemStyle": {"borderRadius": 5},
+#                 "label": {
+#                     "show": False
+#                 },
+#                 "emphasis": {
+#                     "label": {
+#                         "show": False
+#                     }
+#                 },
+#                 "data": l,
+#             }
+#         ],
+#         "color": ['#9f3632', '#c16840', '#eabe83', '#edd3ab', '#eedbbd']
+#     }
+#     return st_echarts(
+#         options=option, height="300px",
+#     )

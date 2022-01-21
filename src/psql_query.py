@@ -24,7 +24,7 @@ def run_query(query: str):
         df = pd.DataFrame(fetched_data, columns=["name", "count"]) \
             # close the communication with the PostgreSQL
         cur.close()
-        pool.putconn(conn)
+        # pool.putconn(conn)
 
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)

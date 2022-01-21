@@ -3,10 +3,11 @@ import pandas as pd
 from config import init_connection
 from streamlit import session_state as stat
 
+pool = init_connection()
+
 
 def run_query(query: str):
     df = pd.DataFrame
-    pool = init_connection()
     conn = None
     try:
         # read connection parameters

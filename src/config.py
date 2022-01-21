@@ -25,4 +25,4 @@ import psycopg2.pool
 
 # @st.cache
 def init_connection():
-    return psycopg2.pool.ThreadedConnectionPool(1, 1, **st.secrets["postgres"])
+    return psycopg2.pool.SimpleConnectionPool(1, 1, **st.secrets["postgres"])

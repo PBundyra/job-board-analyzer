@@ -33,4 +33,3 @@ if __name__ == '__main__':
     else:
         content.default_state()
 
-    st.balloons()

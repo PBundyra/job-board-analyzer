@@ -66,6 +66,7 @@ def init_config() -> None:
 
 def default_state() -> None:
     init_state()
+    st.balloons()
     metrics()
     exp1, exp2 = st.columns(2)
     loc1, loc2 = st.columns(2)

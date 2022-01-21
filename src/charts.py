@@ -1,5 +1,5 @@
 import altair as alt
-from psql_query import run_query, COUNT_BY_LOC, COUNT_BY_TECH, COUNT_BY_EXP, AVG_BY_LOC, AVG_BY_EXP, AVG_BY_TECH, \
+from psql_query import basic_query, COUNT_BY_LOC, COUNT_BY_TECH, COUNT_BY_EXP, AVG_BY_LOC, AVG_BY_EXP, AVG_BY_TECH, \
     MED_BY_TECH, MED_BY_LOC, MED_BY_EXP
 import pandas as pd
 import streamlit as st
@@ -25,69 +25,75 @@ def get_chart(df: pd.DataFrame, title: str, axis_x_title: str) -> alt.Chart:
     )
 
 
+def get_group_chart(df: pd.DataFrame) -> alt.Chart:
+    return basic_query("XD")
+
+
 @st.experimental_memo
 def top_langs_chart() -> alt.Chart:
-    df = run_query(COUNT_BY_TECH).head(10)
+    df = basic_query(COUNT_BY_TECH).head(10)
     df.columns = ["name", "count"]
     return get_chart(df, title="Demand for employees depending on technology", axis_x_title="Number of offers")
 
 
 @st.experimental_memo
 def top_loc_chart() -> alt.Chart:
-    df = run_query(COUNT_BY_LOC).head(10)
+    df = basic_query(COUNT_BY_LOC).head(10)
     df.columns = ["name", "count"]
     return get_chart(df, title="Demand for employees depending on localization", axis_x_title="Number of offers")
 
 
 @st.experimental_memo
 def top_exp_lvl() -> alt.Chart:
-    df = run_query(COUNT_BY_EXP)
+    df = basic_query(COUNT_BY_EXP)
     df.columns = ["name", "count"]
     return get_chart(df, title="Demand for employees depending on experience", axis_x_title="Number of offers")
 
 
 @st.experimental_memo
 def avg_sal_by_loc() -> alt.Chart:
-    df = run_query(AVG_BY_LOC).head(10)
+    df = basic_query(AVG_BY_LOC).head(10)
     df.columns = ["name", "count"]
     return get_chart(df, title="Average offered salary by localization", axis_x_title="Average salary")
 
 
 @st.experimental_memo
 def avg_sal_by_tech():
-    df = run_query(AVG_BY_TECH).head(10)
+    df = basic_query(AVG_BY_TECH).head(10)
     df.columns = ["name", "count"]
     return get_chart(df, title="Average offered salary by technology", axis_x_title="Average salary")
 
+
 @st.experimental_memo
 def avg_sal_by_exp() -> alt.Chart:
-    df = run_query(AVG_BY_EXP)
+    df = basic_query(AVG_BY_EXP)
     df.columns = ["name", "count"]
     return get_chart(df, title="Average offered salary by experience", axis_x_title="Average salary")
 
+
 @st.experimental_memo
 def med_sal_by_tech() -> alt.Chart:
-    df = run_query(MED_BY_TECH).head(10)
+    df = basic_query(MED_BY_TECH).head(10)
     df.columns = ["name", "count"]
     return get_chart(df, title="Median offered salary by technology", axis_x_title="Median salary")
 
+
 @st.experimental_memo
 def med_sal_by_loc() -> alt.Chart:
-    df = run_query(MED_BY_LOC).head(10)
+    df = basic_query(MED_BY_LOC).head(10)
     df.columns = ["name", "count"]
     return get_chart(df, title="Median offered salary by localization", axis_x_title="Median salary")
 
 
 @st.experimental_memo
 def med_sal_by_exp() -> alt.Chart:
-    df = run_query(MED_BY_EXP)
+    df = basic_query(MED_BY_EXP)
     df.columns = ["name", "count"]
     return get_chart(df, title="Median offered salary by experience", axis_x_title="Median salary")
 
 
-
 def pie_chart():
-    df = run_query(AVG_BY_EXP)
+    df = basic_query(AVG_BY_EXP)
     df.columns = ["name", "count"]
     l = [{'name': dicti['name'], 'value': dicti['count']} for dicti in df.to_dict('records')]
 

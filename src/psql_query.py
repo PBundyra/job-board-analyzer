@@ -7,7 +7,7 @@ import streamlit as st
 pool = init_connection()
 
 
-def run_query(query: str):
+def basic_query(query: str):
     df = pd.DataFrame
     conn = None
     cur = None
@@ -34,26 +34,26 @@ def run_query(query: str):
 
 @st.cache
 def get_offer_cnt():
-    return run_query(COUNT_OFFERS)[0][0]
+    return basic_query(COUNT_OFFERS)[0][0]
 
 @st.cache
 def get_avg_salary():
-    return run_query(AVG_SALARY)[0][0]
+    return basic_query(AVG_SALARY)[0][0]
 
 
 @st.cache
 def get_med_salary():
-    return run_query(MED_SALARY)[0][0]
+    return basic_query(MED_SALARY)[0][0]
 
 
 @st.cache
 def get_loc_list():
-    return run_query(ALL_LOC)[0].tolist()
+    return basic_query(ALL_LOC)[0].tolist()
 
 
 @st.cache
 def get_tech_list():
-    return run_query(ALL_TECH)[0].tolist()
+    return basic_query(ALL_TECH)[0].tolist()
 
 COUNT_BY_TECH = """
             SELECT category, count(*)

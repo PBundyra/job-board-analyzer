@@ -16,6 +16,7 @@ import content
 
 if __name__ == '__main__':
     content.init_config()
+    st.balloons()
 
     form = st.sidebar.form(key="Filtry")
     languages = psql_query.get_tech_list()

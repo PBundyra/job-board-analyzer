@@ -89,9 +89,9 @@ def default_state() -> None:
     # st.write(charts.pie_chart())
     st.subheader("Did you know that?")
     sel1 = st.slider(label="Top [%]", min_value=1, max_value=100, value=25)
-    sel2 = st.selectbox(label="of highest salaries for", options=EXP_LIST)
+    sel2 = st.select_slider(label="of highest salaries for", options=['Trainee', 'Junior', 'Mid', 'Senior', 'Expert'], value='Senior')
     text3 = st.write("equals ")
     df = psql_query.top_med_by_exp(100 - sel1).values
     medians = [{el[0]: el[1]} for el in df]
     medians = {k: v for d in medians for k, v in d.items()}
-    st.write(round(medians[sel2]))
+    st.metric(label="", value=round(medians[sel2]))

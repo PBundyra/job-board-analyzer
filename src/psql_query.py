@@ -3,7 +3,6 @@ import pandas as pd
 from config import init_connection
 import streamlit as st
 
-
 print('Connecting to the PostgreSQL database...')
 pool = init_connection()
 
@@ -34,32 +33,32 @@ def basic_query(query: str) -> pd.DataFrame:
     return df
 
 
-@st.cache
+@st.experimental_memo(ttl=600)
 def get_offer_cnt():
     return basic_query(COUNT_OFFERS)[0][0]
 
 
-@st.cache
+@st.experimental_memo(ttl=600)
 def get_avg_salary():
     return basic_query(AVG_SALARY)[0][0]
 
 
-@st.cache
+@st.experimental_memo(ttl=600)
 def get_med_salary():
     return basic_query(MED_SALARY)[0][0]
 
 
-@st.cache
+@st.experimental_memo(ttl=600)
 def get_loc_list():
     return basic_query(ALL_LOC)[0].tolist()
 
 
-@st.cache
+@st.experimental_memo(ttl=600)
 def get_tech_list():
     return basic_query(ALL_TECH)[0].tolist()
 
 
-@st.cache
+@st.experimental_memo(ttl=600)
 def top_med_by_exp(top: float):
     percent = top / 100
     return basic_query(f"""
@@ -75,7 +74,7 @@ def top_med_by_exp(top: float):
             ORDER BY median desc;""")
 
 
-@st.cache
+@st.experimental_memo(ttl=600)
 def top_med_by_loc(top: float) -> pd.DataFrame:
     percent = top / 100
     return basic_query(f"""
@@ -91,7 +90,7 @@ def top_med_by_loc(top: float) -> pd.DataFrame:
             ORDER BY median DESC;""")
 
 
-@st.cache
+@st.experimental_memo(ttl=600)
 def top_med_by_exp(top: float) -> pd.DataFrame:
     percent = top / 100
     return basic_query(f"""

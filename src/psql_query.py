@@ -18,7 +18,7 @@ def run_query(query):
         cur.execute(query)
         # display the PostgreSQL database server version
         fetched_data = cur.fetchall()
-        df = pd.DataFrame(fetched_data) \
+        df = pd.DataFrame(fetched_data, columns=["name", "count"]) \
             # close the communication with the PostgreSQL
         cur.close()
 
@@ -51,10 +51,26 @@ COUNT_BY_EXP = """
             GROUP BY experience_level
             ORDER BY count(*);"""
 
+AVG_BY_LOC = """
+            SELECT jl.city, (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
+            FROM job_employment_type jet
+            FULL JOIN job_location jl ON jet.offer_id = jl.offer_id
+            GROUP BY jl.city, jet.salary_currency
+            HAVING count(salary_to) > 3 AND jet.salary_currency = 'PLN' AND jl.city IS NOT NULL
+            ORDER BY (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2 DESC;"""
 
-def avg_sal_by_tech_query(tech):
-    return f"""
-            SELECT (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
-            FROM job_employment_type
-            WHERE offer_id IN (SELECT offer_id FROM job_category WHERE category = '{tech}');
-    """
+AVG_BY_EXP = """
+            SELECT jel.experience_level,
+       (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
+FROM job_employment_type jet
+         FULL JOIN job_experience_level jel ON jet.offer_id = jel.offer_id
+WHERE salary_currency = 'PLN'
+GROUP BY jel.experience_level, jet.salary_currency
+ORDER BY (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2 DESC;"""
+
+# def avg_sal_by_tech_query(tech):
+#     return f"""
+#             SELECT (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2, 2 * COUNT(*)
+#             FROM job_employment_type
+#             WHERE offer_id IN (SELECT offer_id FROM job_category WHERE category = '{tech}');
+#     """

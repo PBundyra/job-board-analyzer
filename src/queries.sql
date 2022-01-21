@@ -1,36 +1,49 @@
-SELECT AVG(salary_from), AVG(salary_to)
-from job_employment_type
-WHERE offer_id IN (SELECT offer_id FROM job_location WHERE city = 'Warszawa');
-
-SELECT city
-from job_location
-group by city
-order by city;
-
-SELECT experience_level
-FROM job_experience_level
-group by experience_level
-order by experience_level;
-
-SELECT *
-from job_employment_type
-order by offer_id;
-
+-- NO OFFERS BY TECH
 SELECT category, count(*)
 from job_category
 group by category;
 
-SELECT max(employment_type), count(*)
-from job_employment_type
-group by employment_type
-order by employment_type;
-
-
+-- NO OFFERS BY LOC
 SELECT city, count(*)
 FROM job_location
 GROUP BY city
 ORDER BY count(*) DESC;
 
-SELECT (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
-FROM job_employment_type
-WHERE offer_id IN (SELECT offer_id FROM job_category WHERE category = 'java');
+-- AVG BY LOC
+SELECT jl.city, (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
+FROM job_employment_type jet
+         FULL JOIN job_location jl ON jet.offer_id = jl.offer_id
+GROUP BY jl.city, jet.salary_currency
+HAVING count(salary_to) > 3
+   AND jet.salary_currency = 'PLN'
+   AND jl.city IS NOT NULL
+ORDER BY (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2 DESC;
+
+-- AVG BY EXP
+SELECT jel.experience_level,
+       (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
+FROM job_employment_type jet
+         FULL JOIN job_experience_level jel ON jet.offer_id = jel.offer_id
+WHERE salary_currency = 'PLN'
+GROUP BY jel.experience_level, jet.salary_currency
+ORDER BY (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2 DESC;
+
+-- AVG BY TECH
+SELECT jc.category,
+       (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
+FROM job_employment_type jet
+         FULL JOIN job_category jc on jet.offer_id = jc.offer_id
+WHERE salary_currency = 'PLN'
+GROUP BY jc.category, jet.salary_currency
+HAVING count(category) > 3
+ORDER BY (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2 DESC;
+
+-- MEDIAN SALARY BY TECH
+WITH salaries(cat, salary) AS (SELECT jc.category, (CAST(ROUND(salary_to) AS bigint) + CAST(ROUND(salary_from) AS bigint)) / 2
+                          FROM job_employment_type jet
+                                FULL JOIN job_category jc on jet.offer_id = jc.offer_id
+                          WHERE salary_currency = 'PLN')
+SELECT cat, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary)
+FROM salaries
+GROUP BY cat
+HAVING count(cat) > 3;

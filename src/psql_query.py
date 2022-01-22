@@ -6,6 +6,7 @@ import streamlit as st
 print('Connecting to the PostgreSQL database...')
 pool = init_connection()
 
+MIN_NUM_OF_OFFERS = 3
 
 def basic_query(query: str) -> pd.DataFrame:
     df = pd.DataFrame
@@ -75,7 +76,7 @@ def top_med_by_loc(top: float) -> pd.DataFrame:
             SELECT loc, PERCENTILE_CONT({percent}) WITHIN GROUP (ORDER BY salary) AS median
             FROM salaries
             GROUP BY loc
-            HAVING count(loc) > 3
+            HAVING count(loc) > {MIN_NUM_OF_OFFERS}
             ORDER BY median DESC;""")
 
 
@@ -91,72 +92,78 @@ def top_med_by_exp(top: float) -> pd.DataFrame:
             SELECT exp, PERCENTILE_CONT({percent}) WITHIN GROUP (ORDER BY salary) as median
             FROM salaries
             GROUP BY exp
-            HAVING count(exp) > 3
+            HAVING count(exp) > {MIN_NUM_OF_OFFERS}
             ORDER BY median desc;""")
 
 
-COUNT_BY_CAT = """
+COUNT_BY_CAT = f"""
             SELECT category, count(*)
             FROM job_category
             WHERE category IS NOT NULL
             GROUP BY category
+            HAVING count(category) > {MIN_NUM_OF_OFFERS}
             ORDER BY count(*) DESC;"""
 
-COUNT_BY_TECH = """
+COUNT_BY_TECH = f"""
             SELECT technology, count(*)
             FROM job_category
             WHERE technology IS NOT NULL
             GROUP BY technology
+            HAVING count(technology) > {MIN_NUM_OF_OFFERS}
             ORDER BY count(*) DESC;"""
 
-COUNT_BY_LOC = """
+COUNT_BY_LOC = f"""
             SELECT city, count(*)
             FROM job_location
+            WHERE city IS NOT NULL
             GROUP BY city
-            HAVING count(city) > 1
+            HAVING count(city) > {MIN_NUM_OF_OFFERS}
             ORDER BY count(*) DESC;"""
 
-COUNT_BY_EXP = """
+COUNT_BY_EXP = f"""
             SELECT experience_level, count(*)
             FROM job_experience_level
+            WHERE experience_level IS NOT NULL
             GROUP BY experience_level
-            ORDER BY count(*);"""
+            HAVING count(experience_level) > {MIN_NUM_OF_OFFERS}
+            ORDER BY count(*) DESC;"""
 
-AVG_BY_LOC = """
+AVG_BY_LOC = f"""
             SELECT jl.city, (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
             FROM job_employment_type jet
             FULL JOIN job_location jl ON jet.offer_id = jl.offer_id
             GROUP BY jl.city, jet.salary_currency
-            HAVING count(salary_to) > 3 AND jet.salary_currency = 'PLN' AND jl.city IS NOT NULL
+            HAVING count(salary_to) > {MIN_NUM_OF_OFFERS} AND jet.salary_currency = 'PLN' AND jl.city IS NOT NULL
             ORDER BY (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2 DESC;"""
 
-AVG_BY_EXP = """
+AVG_BY_EXP = f"""
             SELECT jel.experience_level, (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
             FROM job_employment_type jet
             FULL JOIN job_experience_level jel ON jet.offer_id = jel.offer_id
             WHERE salary_currency = 'PLN'
             GROUP BY jel.experience_level, jet.salary_currency
+            HAVING count(salary_to) > {MIN_NUM_OF_OFFERS}
             ORDER BY (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2 DESC;"""
 
-AVG_BY_TECH = """
+AVG_BY_TECH = f"""
             SELECT jc.technology, (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
             FROM job_employment_type jet
             FULL JOIN job_category jc on jet.offer_id = jc.offer_id
             WHERE salary_currency = 'PLN'
             GROUP BY jc.technology, jet.salary_currency
-            HAVING count(technology) > 3
+            HAVING count(technology) > {MIN_NUM_OF_OFFERS}
             ORDER BY (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2 DESC;"""
 
-AVG_BY_CAT = """
+AVG_BY_CAT = f"""
             SELECT jc.category, (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
             FROM job_employment_type jet
             FULL JOIN job_category jc on jet.offer_id = jc.offer_id
             WHERE salary_currency = 'PLN'
             GROUP BY jc.category, jet.salary_currency
-            HAVING count(category) > 3
+            HAVING count(category) > {MIN_NUM_OF_OFFERS}
             ORDER BY (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2 DESC;"""
 
-MED_BY_TECH = """
+MED_BY_TECH = f"""
             WITH salaries(tech, salary) AS (SELECT jc.technology, (CAST(ROUND(salary_to) AS bigint) + CAST(ROUND(salary_from) AS bigint)) / 2
                                             FROM job_employment_type jet
                                             FULL JOIN job_category jc ON jet.offer_id = jc.offer_id
@@ -164,10 +171,10 @@ MED_BY_TECH = """
             SELECT tech, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS median
             FROM salaries
             GROUP BY tech
-            HAVING count(tech) > 3
+            HAVING count(tech) > {MIN_NUM_OF_OFFERS}
             ORDER BY median DESC;"""
 
-MED_BY_CAT = """
+MED_BY_CAT = f"""
             WITH salaries(cat, salary) AS (SELECT jc.category, (CAST(ROUND(salary_to) AS bigint) + CAST(ROUND(salary_from) AS bigint)) / 2
                                             FROM job_employment_type jet
                                             FULL JOIN job_category jc ON jet.offer_id = jc.offer_id
@@ -175,10 +182,10 @@ MED_BY_CAT = """
             SELECT cat, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS median
             FROM salaries
             GROUP BY cat
-            HAVING count(cat) > 3
+            HAVING count(cat) > {MIN_NUM_OF_OFFERS}
             ORDER BY median DESC;"""
 
-MED_BY_LOC = """
+MED_BY_LOC = f"""
             WITH salaries(loc, salary) AS (SELECT jl.city,
                                                   (CAST(ROUND(salary_to) AS bigint) + CAST(ROUND(salary_from) AS bigint)) / 2
                                            FROM job_employment_type jet
@@ -187,10 +194,10 @@ MED_BY_LOC = """
             SELECT loc, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS median
             FROM salaries
             GROUP BY loc
-            HAVING count(loc) > 3
+            HAVING count(loc) > {MIN_NUM_OF_OFFERS}
             ORDER BY median DESC;"""
 
-MED_BY_EXP = """
+MED_BY_EXP = f"""
             WITH salaries(exp, salary) AS (SELECT jel.experience_level,
                                                   (CAST(ROUND(salary_to) AS bigint) + CAST(ROUND(salary_from) AS bigint)) / 2
                                            FROM job_employment_type jet
@@ -199,41 +206,41 @@ MED_BY_EXP = """
             SELECT exp, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) as median
             FROM salaries
             GROUP BY exp
-            HAVING count(exp) > 3
+            HAVING count(exp) > {MIN_NUM_OF_OFFERS}
             ORDER BY median desc;"""
 
-COUNT_OFFERS = """SELECT count(*) FROM job_offer;"""
+COUNT_OFFERS = f"""SELECT count(*) FROM job_offer;"""
 
-AVG_SALARY = """
+AVG_SALARY = f"""
             SELECT (CAST(ROUND(AVG(salary_to)) AS bigint) + CAST(ROUND(AVG(salary_from)) AS bigint)) / 2
             FROM job_employment_type jet
             WHERE salary_currency = 'PLN';
             """
 
-MED_SALARY = """
+MED_SALARY = f"""
             WITH salaries(salary) AS (SELECT (CAST(ROUND(salary_to) AS bigint) + CAST(ROUND(salary_from) AS bigint)) / 2
                                       FROM job_employment_type jet
                                       WHERE salary_currency = 'PLN')
             SELECT CAST(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS bigint) AS median
             FROM salaries;"""
 
-ALL_LOC = """
+ALL_LOC = f"""
             SELECT city
             FROM job_location
             GROUP BY city
-            HAVING count(city) > 3
+            HAVING count(city) > {MIN_NUM_OF_OFFERS}
             ORDER BY city;"""
 
-ALL_CAT = """
+ALL_CAT = f"""
             SELECT category
             FROM job_category
             GROUP BY category
-            HAVING count(category) > 3
+            HAVING count(category) > {MIN_NUM_OF_OFFERS}
             ORDER BY category;"""
 
-ALL_TECH = """
+ALL_TECH = f"""
             SELECT technology
             FROM job_category
             GROUP BY technology
-            HAVING count(technology) > 3
+            HAVING count(technology) > {MIN_NUM_OF_OFFERS}
             ORDER BY technology;"""

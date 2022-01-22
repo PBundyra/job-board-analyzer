@@ -161,9 +161,9 @@ def default_state() -> None:
         med1.altair_chart(stat.top_tech, use_container_width=True)
         med2.altair_chart(stat.top_loc, use_container_width=True)
         med3.altair_chart(stat.top_cat, use_container_width=True)
-        stat.butt_list[6] = med_but1.button("See more details about medians", 2143)
-        stat.butt_list[7] = med_but2.button("See more details about averages", 2144)
-        stat.butt_list[8] = med_but2.button("See more details about averages", 2145)
+        stat.butt_list[6] = med_but1.button("See more details about demand", 2143)
+        stat.butt_list[7] = med_but2.button("See more details about demand", 2144)
+        stat.butt_list[8] = med_but3.button("See more details about demand", 2145)
 
         funfact()
         greetings()

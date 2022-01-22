@@ -113,6 +113,7 @@ COUNT_BY_LOC = """
             SELECT city, count(*)
             FROM job_location
             GROUP BY city
+            HAVING count(city) > 1
             ORDER BY count(*) DESC;"""
 
 COUNT_BY_EXP = """

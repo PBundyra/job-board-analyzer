@@ -30,22 +30,22 @@ def get_chart(df: pd.DataFrame, title: str, axis_x_title: str) -> alt.Chart:
 
 
 @st.experimental_memo(ttl=600)
-def top_cat() -> alt.Chart:
-    df = basic_query(COUNT_BY_CAT).head(10)
+def top_cat(num_of_rows: int) -> alt.Chart:
+    df = basic_query(COUNT_BY_CAT).head(num_of_rows)
     df.columns = ["name", "count"]
     return get_chart(df, title="Demand for employees depending on category", axis_x_title="Number of offers")
 
 
 @st.experimental_memo(ttl=600)
-def top_tech() -> alt.Chart:
-    df = basic_query(COUNT_BY_TECH).head(10)
+def top_tech(num_of_rows: int) -> alt.Chart:
+    df = basic_query(COUNT_BY_TECH).head(num_of_rows)
     df.columns = ["name", "count"]
     return get_chart(df, title="Demand for employees depending on technology", axis_x_title="Number of offers")
 
 
 @st.experimental_memo(ttl=600)
-def top_loc() -> alt.Chart:
-    df = basic_query(COUNT_BY_LOC).head(10)
+def top_loc(num_of_rows: int) -> alt.Chart:
+    df = basic_query(COUNT_BY_LOC).head(num_of_rows)
     df.columns = ["name", "count"]
     return get_chart(df, title="Demand for employees depending on localization", axis_x_title="Number of offers")
 
@@ -58,22 +58,22 @@ def top_exp() -> alt.Chart:
 
 
 @st.experimental_memo(ttl=600)
-def avg_sal_by_loc() -> alt.Chart:
-    df = basic_query(AVG_BY_LOC).head(10)
+def avg_sal_by_loc(num_of_rows: int) -> alt.Chart:
+    df = basic_query(AVG_BY_LOC).head(num_of_rows)
     df.columns = ["name", "count"]
     return get_chart(df, title="Average offered salary by localization", axis_x_title="Average salary")
 
 
 @st.experimental_memo(ttl=600)
-def avg_sal_by_cat():
-    df = basic_query(AVG_BY_CAT).head(10)
+def avg_sal_by_cat(num_of_rows: int) -> alt.Chart:
+    df = basic_query(AVG_BY_CAT).head(num_of_rows)
     df.columns = ["name", "count"]
     return get_chart(df, title="Average offered salary by category", axis_x_title="Average salary")
 
 
 @st.experimental_memo(ttl=600)
-def avg_sal_by_tech():
-    df = basic_query(AVG_BY_TECH).head(10)
+def avg_sal_by_tech(num_of_rows: int) -> alt.Chart:
+    df = basic_query(AVG_BY_TECH).head(num_of_rows)
     df.columns = ["name", "count"]
     return get_chart(df, title="Average offered salary by technology", axis_x_title="Average salary")
 
@@ -86,22 +86,22 @@ def avg_sal_by_exp() -> alt.Chart:
 
 
 @st.experimental_memo(ttl=600)
-def med_sal_by_cat() -> alt.Chart:
-    df = basic_query(MED_BY_CAT).head(10)
+def med_sal_by_cat(num_of_rows: int) -> alt.Chart:
+    df = basic_query(MED_BY_CAT).head(num_of_rows)
     df.columns = ["name", "count"]
     return get_chart(df, title="Median offered salary by category", axis_x_title="Median salary")
 
 
 @st.experimental_memo(ttl=600)
-def med_sal_by_tech() -> alt.Chart:
-    df = basic_query(MED_BY_TECH).head(10)
+def med_sal_by_tech(num_of_rows: int) -> alt.Chart:
+    df = basic_query(MED_BY_TECH).head(num_of_rows)
     df.columns = ["name", "count"]
     return get_chart(df, title="Median offered salary by technology", axis_x_title="Median salary")
 
 
 @st.experimental_memo(ttl=600)
-def med_sal_by_loc() -> alt.Chart:
-    df = basic_query(MED_BY_LOC).head(10)
+def med_sal_by_loc(num_of_rows: int) -> alt.Chart:
+    df = basic_query(MED_BY_LOC).head(num_of_rows)
     df.columns = ["name", "count"]
     return get_chart(df, title="Median offered salary by localization", axis_x_title="Median salary")
 

@@ -75,7 +75,7 @@ def init_state() -> None:
     if 'med_but3_res' not in stat:
         stat.med_but3_res = False
     if 'butt_list' not in stat:
-        stat.butt_list = [False] * 8
+        stat.butt_list = [False] * 10
 
 
 def metrics() -> None:
@@ -88,8 +88,6 @@ def metrics() -> None:
 def init_config() -> None:
     st.set_page_config(layout="wide", page_title="Placeholder na chadowy tytuł", initial_sidebar_state="collapsed",
                        page_icon=":ramen:")
-    st.title("Placeholder na chadowy tytuł")
-    st.subheader("Well... basically why should you become a DevOps.")
 
 
 def funfact() -> None:
@@ -114,7 +112,6 @@ def greetings() -> None:
 
 def default_state() -> None:
     init_state()
-    metrics()
 
     BUTT_DICT = {"loc_but1_res": charts.med_sal_by_loc, "loc_but2_res": charts.avg_sal_by_loc,
                  "cat_but1_res": charts.med_sal_by_cat, "cat_but2_res": charts.avg_sal_by_cat,
@@ -126,26 +123,26 @@ def default_state() -> None:
                  "tech_but1_res", "tech_but2_res",
                  "med_but1_res", "med_but2_res", "stat.med_but3_res"]
 
-    loc1, loc2 = st.columns(2)
-    loc_but1, loc_but2 = st.columns(2)
-    cat1, cat2 = st.columns(2)
-    cat_but1, cat_but2 = st.columns(2)
-    tech1, tech2 = st.columns(2)
-    tech_but1, tech_but2 = st.columns(2)
-    exp1, exp2 = st.columns(2)
-    med1, med2, med3 = st.columns(3)
-    med_but1, med_but2, med_but3 = st.columns(3)
 
     if stat.def_but_res and all(not butt_res for butt_res in stat.butt_list):
-        # and not stat.loc_but1_res and not stat.loc_but2_res \
-        # and not stat.cat_but1_res and not stat.cat_but2_res \
-        # and not stat.tech_but1_res and not stat.tech_but2_res \
-        # and not stat.med_but1_res and not stat.med_but2_res and not stat.med_but3_res:
+        st.title("Placeholder na chadowy tytuł")
+        st.subheader("Well... basically why should you become a DevOps.")
+        metrics()
+
+        loc1, loc2 = st.columns(2)
+        loc_but1, loc_but2 = st.columns(2)
+        cat1, cat2 = st.columns(2)
+        cat_but1, cat_but2 = st.columns(2)
+        tech1, tech2 = st.columns(2)
+        tech_but1, tech_but2 = st.columns(2)
+        exp1, exp2 = st.columns(2)
+        med1, med2, med3 = st.columns(3)
+        med_but1, med_but2, med_but3 = st.columns(3)
 
         loc1.altair_chart(stat.med_loc, use_container_width=True)
         loc2.altair_chart(stat.avg_loc, use_container_width=True)
         stat.butt_list[0] = loc_but1.button("See more details about medians", 2137)
-        stat.butt_list[1] = loc_but2.button("See more details about medians", 2138)
+        stat.butt_list[1] = loc_but2.button("See more details about averages", 2138)
         # stat.loc_but2_res = loc_but2.button("See more details about averages", 2138)
 
         cat1.altair_chart(stat.med_cat, use_container_width=True)
@@ -174,24 +171,9 @@ def default_state() -> None:
     else:
         for i in range(len(stat.butt_list)):
             if stat.butt_list[i]:
-                st.altair_chart(BUTT_DICT[BUTT_LIST[i]](-1), use_container_width=True)
                 stat.butt_list[i] = False
                 get_back = st.button("Home")
                 if get_back:
                     stat.def_but_res = True
-            # elif stat.loc_but1_res:
-            #     st.altair_chart(BUTT_DICT[stat.loc_but1_res](-1), use_container_width=True)
-            #     stat.loc_but1_res = False
-            #     get_back = st.button("Home")
-            #     if get_back:
-            #         stat.def_but_res = True
-            # elif stat.loc_but2_res:
-            #     st.altair_chart(charts.avg_sal_by_loc(-1), use_container_width=True)
-            #     stat.loc_but2_res = False
-            #     stat.def_but_res = st.button("Get back")
+                st.altair_chart(BUTT_DICT[BUTT_LIST[i]](-1), use_container_width=True)
 
-        # st.altair_chart(stat.med_tech, use_container_width=True)
-
-        # exp2.element(charts.pie_chart())
-
-        # st.write(charts.pie_chart())

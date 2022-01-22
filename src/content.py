@@ -115,13 +115,13 @@ def default_state() -> None:
 
     BUTT_DICT = {"loc_but1_res": charts.med_sal_by_loc, "loc_but2_res": charts.avg_sal_by_loc,
                  "cat_but1_res": charts.med_sal_by_cat, "cat_but2_res": charts.avg_sal_by_cat,
-                 "tech_but1_re": charts.med_sal_by_tech, "tech_but2_res": charts.avg_sal_by_tech,
+                 "tech_but1_res": charts.med_sal_by_tech, "tech_but2_res": charts.avg_sal_by_tech,
                  "med_but1_res": charts.top_tech, "med_but2_res": charts.top_loc,
                  "med_but3_res": charts.top_cat}
     BUTT_LIST = ["loc_but1_res", "loc_but2_res",
                  "cat_but1_res", "cat_but2_res",
                  "tech_but1_res", "tech_but2_res",
-                 "med_but1_res", "med_but2_res", "stat.med_but3_res"]
+                 "med_but1_res", "med_but2_res", "med_but3_res"]
 
 
     if stat.def_but_res and all(not butt_res for butt_res in stat.butt_list):

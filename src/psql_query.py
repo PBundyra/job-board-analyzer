@@ -117,7 +117,7 @@ COUNT_BY_LOC = f"""
             FROM job_location
             WHERE city IS NOT NULL
             GROUP BY city
-            HAVING count(city) > {MIN_NUM_OF_OFFERS}
+            HAVING count(*) > 5
             ORDER BY count(*) DESC;"""
 
 COUNT_BY_EXP = f"""

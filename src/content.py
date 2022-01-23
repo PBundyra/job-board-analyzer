@@ -11,14 +11,14 @@ EXP_LIST = ['Trainee', 'Junior', 'Mid', 'Senior', 'Expert']
 def init_state() -> None:
     if 'conn' not in stat:
         stat.conn = config.init_connection()
-    if 'top_exp' not in stat:
-        stat.top_exp = charts.top_exp()
-    if 'top_loc' not in stat:
-        stat.top_loc = charts.top_loc(10)
-    if 'top_tech' not in stat:
-        stat.top_tech = charts.top_tech(10)
-    if 'top_cat' not in stat:
-        stat.top_cat = charts.top_cat(10)
+    if 'dem_exp' not in stat:
+        stat.dem_exp = charts.dem_exp()
+    if 'dem_loc' not in stat:
+        stat.dem_loc = charts.dem_loc(10)
+    if 'dem_tech' not in stat:
+        stat.dem_tech = charts.dem_tech(10)
+    if 'dem_cat' not in stat:
+        stat.dem_cat = charts.dem_cat(10)
     if 'avg_exp' not in stat:
         stat.avg_exp = charts.avg_sal_by_exp()
     if 'avg_loc' not in stat:
@@ -88,16 +88,22 @@ def greetings() -> None:
     if ball:
         st.balloons()
 
+
 def side_bar() -> None:
     form = st.sidebar.form(key="Filtry")
-    stat.selected_tech = form.multiselect(label="Technology",
-                             options=psql_query.get_tech_list())
     stat.selected_loc = form.multiselect(label="Localization",
-                           options=psql_query.get_loc_list())
-    stat.selected_cat = form.multiselect(label="Category",
-                           options=psql_query.get_cat_list())
+                                         options=psql_query.get_loc_list())
     stat.selected_exp = form.multiselect(label="Experience",
-                                  options=EXP_LIST)
+                                         options=EXP_LIST)
+    cat_or_tech = form.radio(label="Choose to filter by category or technology", options=["Category", "Technology"],
+                             index=1)
+    print(cat_or_tech)
+    if cat_or_tech == "Category":
+        stat.selected_cat = form.multiselect(label="Category",
+                                             options=psql_query.get_cat_list())
+    else:
+        stat.selected_tech = form.multiselect(label="Technology",
+                                              options=psql_query.get_tech_list())
     stat.bar_but_res = form.form_submit_button(label='Show me my dear data')
     if stat.bar_but_res and not any([stat.selected_tech, stat.selected_loc, stat.selected_cat, stat.selected_exp]):
         form.error("Please select at least one option")
@@ -105,6 +111,7 @@ def side_bar() -> None:
 
 
 def statistics_page() -> None:
+    experience_str = []
     if not stat.selected_exp:
         experience_str = ""
     else:
@@ -124,6 +131,11 @@ def statistics_page() -> None:
     st.write(f"Statistics for {experience_str} living in {loc_str} that use {tech_str} for  {cat_str}")
 
 
+#   avg chart
+#   med chart
+#   dem chart
+
+
 def default_charts() -> None:
     loc1, loc2 = st.columns(2)
     loc_but1, loc_but2 = st.columns(2)
@@ -137,7 +149,7 @@ def default_charts() -> None:
 
     loc1.altair_chart(stat.med_loc, use_container_width=True)
     loc2.altair_chart(stat.avg_loc, use_container_width=True)
-    stat.but_list[0] = loc_but1.button("See more details about medians", 2137, on_click=st.experimental_rerun)
+    stat.but_list[0] = loc_but1.button("See more details about medians", 2137)
     stat.but_list[1] = loc_but2.button("See more details about averages", 2138)
 
     cat1.altair_chart(stat.med_cat, use_container_width=True)
@@ -153,23 +165,24 @@ def default_charts() -> None:
     exp1.altair_chart(stat.med_exp, use_container_width=True)
     exp2.altair_chart(stat.avg_exp, use_container_width=True)
 
-    dem1.altair_chart(stat.top_tech, use_container_width=True)
-    dem2.altair_chart(stat.top_loc, use_container_width=True)
-    dem3.altair_chart(stat.top_cat, use_container_width=True)
+    dem1.altair_chart(stat.dem_tech, use_container_width=True)
+    dem2.altair_chart(stat.dem_loc, use_container_width=True)
+    dem3.altair_chart(stat.dem_cat, use_container_width=True)
     stat.but_list[6] = dem_but1.button("See more details about demand", 2143)
     stat.but_list[7] = dem_but2.button("See more details about demand", 2144)
     stat.but_list[8] = dem_but3.button("See more details about demand", 2145)
 
+
 def home_page() -> None:
     BUT_DICT = {"loc_but1_res": charts.med_sal_by_loc, "loc_but2_res": charts.avg_sal_by_loc,
-                 "cat_but1_res": charts.med_sal_by_cat, "cat_but2_res": charts.avg_sal_by_cat,
-                 "tech_but1_res": charts.med_sal_by_tech, "tech_but2_res": charts.avg_sal_by_tech,
-                 "med_but1_res": charts.top_tech, "med_but2_res": charts.top_loc,
-                 "med_but3_res": charts.top_cat}
+                "cat_but1_res": charts.med_sal_by_cat, "cat_but2_res": charts.avg_sal_by_cat,
+                "tech_but1_res": charts.med_sal_by_tech, "tech_but2_res": charts.avg_sal_by_tech,
+                "med_but1_res": charts.dem_tech, "med_but2_res": charts.dem_loc,
+                "med_but3_res": charts.dem_cat}
     BUT_LIST = ["loc_but1_res", "loc_but2_res",
-                 "cat_but1_res", "cat_but2_res",
-                 "tech_but1_res", "tech_but2_res",
-                 "med_but1_res", "med_but2_res", "med_but3_res"]
+                "cat_but1_res", "cat_but2_res",
+                "tech_but1_res", "tech_but2_res",
+                "med_but1_res", "med_but2_res", "med_but3_res"]
 
     if stat.def_but_res and all(not but_res for but_res in stat.but_list):
         st.subheader("Well... basically why should you become a DevOps.")

@@ -8,6 +8,7 @@ pool = init_connection()
 
 MIN_NUM_OF_OFFERS = 3
 
+
 def basic_query(query: str) -> pd.DataFrame:
     df = pd.DataFrame
     conn = None
@@ -32,6 +33,193 @@ def basic_query(query: str) -> pd.DataFrame:
             pool.putconn(conn)
             print('Putting connection to the pull')
     return df
+
+
+def avg_query_with_tech_params(loc: list = None, tech: list = None, exp: list = None) -> pd.DataFrame:
+    EXP_LVL_LIST = ['Trainee', 'Junior', 'Mid', 'Senior', 'Expert']
+    loc_tuple = tuple(get_loc_list()) if not loc else tuple(loc)
+    tech_tuple = tuple(get_tech_list()) if not tech else tuple(tech)
+    exp_tuple = tuple(EXP_LVL_LIST) if not exp else tuple(exp)
+    all_loc = tuple(get_loc_list())
+    all_tech = tuple(get_tech_list())
+    all_exp = tuple(EXP_LVL_LIST)
+
+    return basic_query(f"""
+                with no_copies AS (select id,
+                                      city,
+                                      technology,
+                                      experience_level,
+                                      (min(salary_from) + max(salary_from) + min(salary_to) + max(salary_to))/4   as salary
+                               from job_offer
+                                        left join job_category jc on job_offer.id = jc.offer_id
+                                        left join job_employment_type jet on job_offer.id = jet.offer_id
+                                        left join job_location jl on job_offer.id = jl.offer_id
+                                        left join job_experience_level jel on job_offer.id = jel.offer_id
+                               where city in {loc_tuple}
+                                 and technology in {tech_tuple}
+                                 and experience_level in {exp_tuple}
+                                 and salary_to IS NOT NULL
+                               group by id, city, technology, experience_level
+                               order by id)
+            select max(city),
+                   max(technology),
+                   max(experience_level),
+                   CAST(ROUND(AVG(salary)) AS bigint) as avg_salary
+            from no_copies
+            group by (case when {len(all_loc)} != {len(loc_tuple)} then city end),
+                     (case when {len(all_tech)} != {len(tech_tuple)} then technology end),
+                     (case when {len(all_exp)} != {len(exp_tuple)} then experience_level end);""")
+
+
+def med_query_with_tech_params(loc: list = None, tech: list = None, exp: list = None) -> pd.DataFrame:
+    EXP_LVL_LIST = ['Trainee', 'Junior', 'Mid', 'Senior', 'Expert']
+    loc_tuple = tuple(get_loc_list()) if not loc else tuple(loc)
+    tech_tuple = tuple(get_tech_list()) if not tech else tuple(tech)
+    exp_tuple = tuple(EXP_LVL_LIST) if not exp else tuple(exp)
+    all_loc = tuple(get_loc_list())
+    all_tech = tuple(get_tech_list())
+    all_exp = tuple(EXP_LVL_LIST)
+
+    return basic_query(f"""
+                with no_copies AS (select id,
+                                      city,
+                                      technology,
+                                      experience_level,
+                                      (min(salary_from) + max(salary_from) + min(salary_to) + max(salary_to))/4   as salary
+                               from job_offer
+                                        left join job_category jc on job_offer.id = jc.offer_id
+                                        left join job_employment_type jet on job_offer.id = jet.offer_id
+                                        left join job_location jl on job_offer.id = jl.offer_id
+                                        left join job_experience_level jel on job_offer.id = jel.offer_id
+                               where city in {loc_tuple}
+                                 and technology in {tech_tuple}
+                                 and experience_level in {exp_tuple}
+                                 and salary_to IS NOT NULL
+                               group by id, city, technology, experience_level
+                               order by id)
+            select max(city),
+                   max(technology),
+                   max(experience_level),
+                   CAST(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS bigint) AS median
+            from no_copies
+            group by (case when {len(all_loc)} != {len(loc_tuple)} then city end),
+                     (case when {len(all_tech)} != {len(tech_tuple)} then technology end),
+                     (case when {len(all_exp)} != {len(exp_tuple)} then experience_level end);""")
+
+
+def avg_query_with_cat_params(loc: list = None, exp: list = None, cat: list = None) -> pd.DataFrame:
+    EXP_LVL_LIST = ['Trainee', 'Junior', 'Mid', 'Senior', 'Expert']
+    loc_tuple = tuple(get_loc_list()) if not loc else tuple(loc)
+    cat_tuple = tuple(get_cat_list()) if not cat else tuple(cat)
+    exp_tuple = tuple(EXP_LVL_LIST) if not exp else tuple(exp)
+    all_loc = tuple(get_loc_list())
+    all_cat = tuple(get_cat_list())
+    all_exp = tuple(EXP_LVL_LIST)
+
+    return basic_query(f"""
+                with no_copies AS (select id,
+                                      city,
+                                      category,
+                                      experience_level,
+                                      (min(salary_from) + max(salary_from) + min(salary_to) + max(salary_to))/4   as salary
+                               from job_offer
+                                        left join job_category jc on job_offer.id = jc.offer_id
+                                        left join job_employment_type jet on job_offer.id = jet.offer_id
+                                        left join job_location jl on job_offer.id = jl.offer_id
+                                        left join job_experience_level jel on job_offer.id = jel.offer_id
+                               where city in {loc_tuple}
+                                 and category in {cat_tuple}
+                                 and experience_level in {exp_tuple}
+                                 and salary_to IS NOT NULL
+                               group by id, city, category, experience_level
+                               order by id)
+            select max(city),
+                   max(category),
+                   max(experience_level),
+                   CAST(ROUND(AVG(salary)) AS bigint) as avg_salary
+            from no_copies
+            group by (case when {len(all_loc)} != {len(loc_tuple)} then city end),
+                     (case when {len(all_cat)} != {len(cat_tuple)} then category end),
+                     (case when {len(all_exp)} != {len(exp_tuple)} then experience_level end);""")
+
+
+def med_query_with_cat_params(loc: list = None, exp: list = None, cat: list = None) -> pd.DataFrame:
+    EXP_LVL_LIST = ['Trainee', 'Junior', 'Mid', 'Senior', 'Expert']
+    loc_tuple = tuple(get_loc_list()) if not loc else tuple(loc)
+    cat_tuple = tuple(get_cat_list()) if not cat else tuple(cat)
+    exp_tuple = tuple(EXP_LVL_LIST) if not exp else tuple(exp)
+    all_loc = tuple(get_loc_list())
+    all_cat = tuple(get_cat_list())
+    all_exp = tuple(EXP_LVL_LIST)
+
+    return basic_query(f"""
+                with no_copies AS (select id,
+                                      city,
+                                      category,
+                                      experience_level,
+                                      (min(salary_from) + max(salary_from) + min(salary_to) + max(salary_to))/4   as salary
+                               from job_offer
+                                        left join job_category jc on job_offer.id = jc.offer_id
+                                        left join job_employment_type jet on job_offer.id = jet.offer_id
+                                        left join job_location jl on job_offer.id = jl.offer_id
+                                        left join job_experience_level jel on job_offer.id = jel.offer_id
+                               where city in {loc_tuple}
+                                 and category in {cat_tuple}
+                                 and experience_level in {exp_tuple}
+                                 and salary_to IS NOT NULL
+                               group by id, city, category, experience_level
+                               order by id)
+            select max(city),
+                   max(category),
+                   max(experience_level), """ + f"""
+                   CAST(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS bigint) AS median
+            from no_copies
+            group by (case when {len(all_loc)} != {len(loc_tuple)} then city end),
+                     (case when {len(all_cat)} != {len(cat_tuple)} then category end),
+                     (case when {len(all_exp)} != {len(exp_tuple)} then experience_level end);""")
+
+
+def get_query_with_params(query_type: str, loc: list = None, tech: list = None, exp: list = None,
+                          cat: list = None) -> pd.DataFrame:
+    EXP_LVL_LIST = ['Trainee', 'Junior', 'Mid', 'Senior', 'Expert']
+    cat_xor_tech = "technology" if tech else "category"
+    cat_xor_tech_tuple = tuple(tech) if tech else tuple(cat)
+    loc_tuple = tuple(get_loc_list()) if not loc else tuple(loc)
+    exp_tuple = tuple(EXP_LVL_LIST) if not exp else tuple(exp)
+    all_loc = tuple(get_loc_list())
+    all_cat_xor_tech = tuple(get_tech_list()) if tech else tuple(get_cat_list())
+    all_exp = tuple(EXP_LVL_LIST)
+    med_avg_xor_dem = ""
+    if query_type == "AVG":
+        med_avg_xor_dem = """CAST(ROUND(AVG(salary)) AS bigint) as  average"""
+    elif query_type == "MED":
+        med_avg_xor_dem = "CAST(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS bigint) AS median"
+    else:
+        med_avg_xor_dem = "count(*) as dem"
+
+    return basic_query(f"""
+                with no_copies AS (select id,
+                                      city,""" + cat_xor_tech + f""",
+                                      experience_level,
+                                      (min(salary_from) + max(salary_from) + min(salary_to) + max(salary_to))/4   as salary
+                               from job_offer
+                                        left join job_category jc on job_offer.id = jc.offer_id
+                                        left join job_employment_type jet on job_offer.id = jet.offer_id
+                                        left join job_location jl on job_offer.id = jl.offer_id
+                                        left join job_experience_level jel on job_offer.id = jel.offer_id
+                               where city in {loc_tuple}
+                                 and """ + cat_xor_tech + f""" in """ + f"""{cat_xor_tech_tuple}""" + f"""
+                                 and experience_level in {exp_tuple}
+                                 and salary_to IS NOT NULL
+                               group by id, city, """ + cat_xor_tech + f""", experience_level
+                               order by id)
+            select max(city),
+                   max(""" + cat_xor_tech + f"""),
+                   max(experience_level),""" + med_avg_xor_dem + f"""
+            from no_copies
+            group by (case when {len(all_loc)} != {len(loc_tuple)} then city end),
+                     (case when {len(all_cat_xor_tech)} != {len(cat_xor_tech)} then """ + cat_xor_tech + f""" end),
+                     (case when {len(all_exp)} != {len(exp_tuple)} then experience_level end);""")
 
 
 @st.experimental_memo(ttl=600)

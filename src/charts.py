@@ -24,33 +24,33 @@ def get_chart(df: pd.DataFrame, title: str, axis_x_title: str) -> alt.Chart:
     )
 
 
-# def get_group_chart(df: pd.DataFrame) -> alt.Chart:
-#     return basic_query("XD")
+def get_group_chart(df: pd.DataFrame) -> alt.Chart:
+    return basic_query("XD")
 
 
 @st.experimental_memo(ttl=600)
-def top_cat(num_of_rows: int) -> alt.Chart:
+def dem_cat(num_of_rows: int) -> alt.Chart:
     df = basic_query(COUNT_BY_CAT).head(num_of_rows)
     df.columns = ["category", "Number of offers"]
     return get_chart(df, title="Demand for employees depending on category", axis_x_title="Number of offers")
 
 
 @st.experimental_memo(ttl=600)
-def top_tech(num_of_rows: int) -> alt.Chart:
+def dem_tech(num_of_rows: int) -> alt.Chart:
     df = basic_query(COUNT_BY_TECH).head(num_of_rows)
     df.columns = ["technology", "Number of offers"]
     return get_chart(df, title="Demand for employees depending on technology", axis_x_title="Number of offers")
 
 
 @st.experimental_memo(ttl=600)
-def top_loc(num_of_rows: int) -> alt.Chart:
+def dem_loc(num_of_rows: int) -> alt.Chart:
     df = basic_query(COUNT_BY_LOC).head(num_of_rows)
     df.columns = ["city", "Number of offers"]
     return get_chart(df, title="Demand for employees depending on localization", axis_x_title="Number of offers")
 
 
 @st.experimental_memo(ttl=600)
-def top_exp() -> alt.Chart:
+def dem_exp() -> alt.Chart:
     df = basic_query(COUNT_BY_EXP)
     df.columns = ["experience level", "PLN"]
     return get_chart(df, title="Demand for employees depending on experience", axis_x_title="Number of offers")

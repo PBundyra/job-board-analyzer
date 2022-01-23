@@ -1,32 +1,17 @@
 #!/usr/bin/python
-import pandas as pd
 import streamlit as st
-import psql_query
-import charts
-import altair as alt
 from streamlit import session_state as stat
-import config
-from streamlit_echarts import st_echarts
 import content
-
 
 if __name__ == '__main__':
     content.init_config()
+    st.title("Placeholder na chadowy tytuł")
+    content.side_bar()
 
-    form = st.sidebar.form(key="Filtry")
-    languages = psql_query.get_tech_list()
-    langs = form.multiselect(label="Technology",
-                             options=psql_query.get_tech_list())
-    loc = form.multiselect(label="Localization",
-                           options=psql_query.get_loc_list())
-    experience = form.multiselect(label="Experience",
-                                  options=content.EXP_LIST)
-    submit_button = form.form_submit_button(label='Show me my dear data')
-    default_button = form.form_submit_button(label='Show me defaults')
-
-    if submit_button:
-        st.write("Essa")
+    if stat.bar_but_res:
+        get_back = st.button("Home")
+        if get_back:
+            stat.bar_but_res = False
+        content.statistics_page()
     else:
-        content.default_state()
-
-
+        content.home_page()

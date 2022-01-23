@@ -35,29 +35,24 @@ def basic_query(query: str) -> pd.DataFrame:
     return df
 
 
-def get_query_with_params(query_type: str, loc: list = None, tech: list = None, exp: list = None,
-                          cat: list = None) -> pd.DataFrame:
+def get_query_with_params(loc: list = None, tech: list = None, exp: list = None, cat: list = None) -> pd.DataFrame:
     EXP_LVL_LIST = ['Trainee', 'Junior', 'Mid', 'Senior', 'Expert']
     cat_xor_tech = "technology" if tech else "category"
-    cat_xor_tech_tuple = tuple(tech) if tech else tuple(cat)
+    if not tech and not cat:
+        cat_xor_tech_tuple = tuple(get_cat_list())
+    else:
+        cat_xor_tech_tuple = tuple(tech) if tech else tuple(cat)
     loc_tuple = tuple(get_loc_list()) if not loc else tuple(loc)
     exp_tuple = tuple(EXP_LVL_LIST) if not exp else tuple(exp)
     all_loc = tuple(get_loc_list())
     all_cat_xor_tech = tuple(get_tech_list()) if tech else tuple(get_cat_list())
     all_exp = tuple(EXP_LVL_LIST)
-    med_avg_xor_dem = ""
-    if query_type == "AVG":
-        med_avg_xor_dem = """CAST(ROUND(AVG(salary)) AS bigint) as  average"""
-    elif query_type == "MED":
-        med_avg_xor_dem = "CAST(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS bigint) AS median"
-    else:
-        med_avg_xor_dem = "count(*) as dem"
 
     return basic_query(f"""
                 with no_copies AS (select id,
                                       city,""" + cat_xor_tech + f""",
                                       experience_level,
-                                      (min(salary_from) + max(salary_from) + min(salary_to) + max(salary_to))/4   as salary
+                                      (min(salary_from) + max(salary_from) + min(salary_to) + max(salary_to)) / 4 as salary
                                from job_offer
                                         left join job_category jc on job_offer.id = jc.offer_id
                                         left join job_employment_type jet on job_offer.id = jet.offer_id
@@ -71,10 +66,13 @@ def get_query_with_params(query_type: str, loc: list = None, tech: list = None, 
                                order by id)
             select max(city),
                    max(""" + cat_xor_tech + f"""),
-                   max(experience_level),""" + med_avg_xor_dem + f"""
+                   max(experience_level),
+                   CAST(ROUND(AVG(salary)) AS bigint) as  average,
+                   CAST(PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY salary) AS bigint) AS median,
+                   count(salary) as dem
             from no_copies
             group by (case when {len(all_loc)} != {len(loc_tuple)} then city end),
-                     (case when {len(all_cat_xor_tech)} != {len(cat_xor_tech)} then """ + cat_xor_tech + f""" end),
+                     (case when {len(all_cat_xor_tech)} != {len(cat_xor_tech_tuple)} then """ + cat_xor_tech + f""" end),
                      (case when {len(all_exp)} != {len(exp_tuple)} then experience_level end);""")
 
 

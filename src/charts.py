@@ -24,10 +24,6 @@ def get_chart(df: pd.DataFrame, title: str, axis_x_title: str) -> alt.Chart:
     )
 
 
-def get_group_chart(df: pd.DataFrame) -> alt.Chart:
-    return basic_query("XD")
-
-
 @st.experimental_memo(ttl=600)
 def dem_cat(num_of_rows: int) -> alt.Chart:
     df = basic_query(COUNT_BY_CAT).head(num_of_rows)

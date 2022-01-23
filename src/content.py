@@ -48,13 +48,13 @@ def init_state() -> None:
     if 'bar_but_res' not in stat:
         stat.bar_but_res = False
     if 'selected_tech' not in stat:
-        stat.selected_tech = []
+        stat.selected_tech = None
     if 'selected_loc' not in stat:
-        stat.selected_loc = []
+        stat.selected_loc = None
     if 'selected_cat' not in stat:
-        stat.selected_cat = []
+        stat.selected_cat = None
     if 'selected_exp' not in stat:
-        stat.selected_exp = []
+        stat.selected_exp = None
 
 
 def metrics() -> None:
@@ -95,45 +95,31 @@ def side_bar() -> None:
                                          options=psql_query.get_loc_list())
     stat.selected_exp = form.multiselect(label="Experience",
                                          options=EXP_LIST)
-    cat_or_tech = form.radio(label="Choose to filter by category or technology", options=["Category", "Technology"],
-                             index=1)
-    print(cat_or_tech)
-    if cat_or_tech == "Category":
-        stat.selected_cat = form.multiselect(label="Category",
-                                             options=psql_query.get_cat_list())
-    else:
-        stat.selected_tech = form.multiselect(label="Technology",
-                                              options=psql_query.get_tech_list())
+    cat_or_tech = form.radio(label="Choose to filter by category or technology", options=["Category", "Technology"])
+
+    stat.selected_cat = form.multiselect(label="Category", options=psql_query.get_cat_list())
+    stat.selected_tech = form.multiselect(label="Technology", options=psql_query.get_tech_list())
     stat.bar_but_res = form.form_submit_button(label='Show me my dear data')
+
     if stat.bar_but_res and not any([stat.selected_tech, stat.selected_loc, stat.selected_cat, stat.selected_exp]):
         form.error("Please select at least one option")
         stat.bar_but_res = False
+    if (cat_or_tech == "Category" and stat.selected_tech) or (
+            cat_or_tech == "Technology" and stat.selected_cat):
+        form.error("Please select choose category or technology and fill the right bar")
 
 
 def statistics_page() -> None:
-    experience_str = []
-    if not stat.selected_exp:
-        experience_str = ""
+    df = psql_query.get_query_with_params(loc=stat.selected_loc, exp=stat.selected_exp,
+                                          tech=stat.selected_tech, cat=stat.selected_cat)
+    df.columns = ["city", "cat or tech", "experience", "average", "median", "demand"]
+    if not stat.selected_cat and not stat.selected_tech:
+        df = df.loc[:, ["city", "experience", "average", "median", "demand"]]
+    elif stat.selected_cat:
+        df.rename(columns={"cat or tech": "category"}, inplace=True)
     else:
-        experience_str = ", ".join(stat.selected_exp)
-    if not stat.selected_tech:
-        tech_str = ""
-    else:
-        tech_str = ", ".join(stat.selected_tech)
-    if not stat.selected_loc:
-        loc_str = ""
-    else:
-        loc_str = ", ".join(stat.selected_loc)
-    if not stat.selected_cat:
-        cat_str = ""
-    else:
-        cat_str = ", ".join(stat.selected_cat)
-    st.write(f"Statistics for {experience_str} living in {loc_str} that use {tech_str} for  {cat_str}")
-
-
-#   avg chart
-#   med chart
-#   dem chart
+        df.rename(columns={"cat or tech": "technology"}, inplace=True)
+    st.write(df)
 
 
 def default_charts() -> None:

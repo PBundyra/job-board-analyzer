@@ -115,10 +115,6 @@ def statistics_page() -> None:
     df.columns = ["city", "cat or tech", "experience", "average", "median", "demand"]
     if not stat.selected_cat and not stat.selected_tech:
         df = df.loc[:, ["city", "experience", "average", "median", "demand"]]
-    elif stat.selected_cat:
-        df.rename(columns={"cat or tech": "category"}, inplace=True)
-    else:
-        df.rename(columns={"cat or tech": "technology"}, inplace=True)
     st.write(df)
 
 

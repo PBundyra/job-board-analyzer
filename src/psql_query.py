@@ -37,7 +37,7 @@ def basic_query(query: str) -> pd.DataFrame:
 
 def wrap_list_to_str(l: list) -> str:
     s = ' '.join(l)
-    s = ', '.join("'{}'".format(word) for word in s.split(' '))
+    s = ', '.join("'{}'".format(word) for word in l)
     s = '(' + s + ')'
     return s
 
@@ -45,14 +45,14 @@ def wrap_list_to_str(l: list) -> str:
 def get_query_with_params(loc: list = None, tech: list = None, exp: list = None, cat: list = None) -> pd.DataFrame:
     EXP_LVL_LIST = ['Trainee', 'Junior', 'Mid', 'Senior', 'Expert']
     cat_xor_tech = "technology" if tech else "category"
-    if not tech and not cat:
+    if tech == [] and cat == []:
         cat_xor_tech_tuple = tuple(get_cat_list())
     else:
-        cat_xor_tech_tuple = wrap_list_to_str(tech) if tech else wrap_list_to_str(cat)
+        cat_xor_tech_tuple = wrap_list_to_str(tech) if tech != [] else wrap_list_to_str(cat)
     loc_tuple = tuple(get_loc_list()) if loc == [] else wrap_list_to_str(loc)
     exp_tuple = tuple(EXP_LVL_LIST) if exp == [] else wrap_list_to_str(exp)
     all_loc = tuple(get_loc_list())
-    all_cat_xor_tech = tuple(get_tech_list()) if tech else tuple(get_cat_list())
+    all_cat_xor_tech = tuple(get_tech_list()) if tech != [] else tuple(get_cat_list())
     all_exp = tuple(EXP_LVL_LIST)
 
     return basic_query(f"""

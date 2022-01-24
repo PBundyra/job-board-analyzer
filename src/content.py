@@ -58,6 +58,8 @@ def init_state() -> None:
         stat.selected_cat = None
     if 'selected_exp' not in stat:
         stat.selected_exp = None
+    if 'cat_or_tech' not in stat:
+        stat.cat_or_tech = ""
 
 
 def metrics() -> None:
@@ -99,7 +101,7 @@ def side_bar() -> None:
                                          options=psql_query.get_loc_list())
     stat.selected_exp = form.multiselect(label="Experience",
                                          options=EXP_LIST)
-    cat_or_tech = form.radio(label="Choose to filter by category or technology", options=["Category", "Technology"])
+    stat.cat_or_tech = form.radio(label="Choose to filter by category or technology", options=["Category", "Technology"])
 
     stat.selected_cat = form.multiselect(label="Category", options=psql_query.get_cat_list())
     stat.selected_tech = form.multiselect(label="Technology", options=psql_query.get_tech_list())
@@ -108,23 +110,26 @@ def side_bar() -> None:
     if stat.bar_but_res and not any([stat.selected_tech, stat.selected_loc, stat.selected_cat, stat.selected_exp]):
         form.error("Please select at least one option")
         stat.bar_but_res = False
-    if (cat_or_tech == "Category" and stat.selected_tech) or (
-            cat_or_tech == "Technology" and stat.selected_cat):
+    if (stat.cat_or_tech == "Category" and stat.selected_tech) or (
+            stat.cat_or_tech == "Technology" and stat.selected_cat):
         form.error("Please select choose category or technology and fill the right bar")
 
 
 def statistics_page() -> None:
     df = psql_query.get_query_with_params(loc=stat.selected_loc, exp=stat.selected_exp,
                                           tech=stat.selected_tech, cat=stat.selected_cat)
-    df.columns = ["city", "cat_or_tech", "experience", "average", "median", "demand"]
-    if not stat.selected_exp:
-        df = df.loc[:, df.columns != 'experience']
-    if not stat.selected_cat and not stat.selected_tech:
-        df = df.loc[:, df.columns != 'cat_or_tech']
-    if not stat.selected_loc:
-        df = df.loc[:, df.columns != 'city']
-    st.write(df)
-    # hm.get_heatmap(df)
+    if df.empty:
+        st.warning("No offers have been found.")
+    else:
+        df.columns = ["City", "Category/Technology", "Experience", "Average", "Median", "Demand"]
+        if not stat.selected_exp:
+            df = df.loc[:, df.columns != 'Experience']
+        if not stat.selected_cat and not stat.selected_tech:
+            df = df.loc[:, df.columns != 'Category/Technology']
+        if not stat.selected_loc:
+            df = df.loc[:, df.columns != 'City']
+        st.write(df)
+        hm.get_heatmap(df)
 
 
 def default_charts() -> None:

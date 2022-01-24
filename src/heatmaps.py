@@ -10,10 +10,16 @@ def heatmap_with_all_params(df: pd.DataFrame):
     exps = df['Experience']
     techs = df['Category/Technology']
 
-    for exp in exps:
+    for exp in exps.unique():
+
+        for city in cities.unique():
+            for tech in techs.unique():
+                if not ((df['City'] == city) & (df['Category/Technology'] == tech) & (df['Experience'] == exp)).any():
+                    df.loc[len(df.index)] = [city, tech, exp, 0, 0, 0]
+
         medians = [list(df[(df['City'] == City) & (df['Experience'] == exp)]['Median']) for City in
                    df['City'].unique()]
-        #
+
         averages = [list(df[(df['City'] == City) & (df['Experience'] == exp)]['Average']) for City in
                     df['City'].unique()]
 
@@ -21,21 +27,26 @@ def heatmap_with_all_params(df: pd.DataFrame):
                    df['City'].unique()]
 
         fig = imshow(medians, title=f"Medians for {exp}", y=cities.unique(), x=techs.unique(),
-                     labels=dict(x="Technology", y="City", color="[PLN]"))
+                     labels=dict(x="Technology", y="City", color="[PLN]"), color_continuous_scale="Oranges")
         st.plotly_chart(fig)
 
         fig = imshow(averages, title=f"Averages for {exp}", y=cities.unique(), x=techs.unique(),
-                     labels=dict(x="Technology", y="City", color="[PLN]"))
+                     labels=dict(x="Technology", y="City", color="[PLN]"), color_continuous_scale="Oranges")
         st.plotly_chart(fig)
 
         fig = imshow(demands, title=f"Demands for {exp}", y=cities.unique(), x=techs.unique(),
-                     labels=dict(x="Technology", y="City", color=""))
+                     labels=dict(x="Technology", y="City", color=""), color_continuous_scale="Oranges")
         st.plotly_chart(fig)
 
 
 def heatmap_with_city_and_exp(df: pd.DataFrame) -> None:
     cities = df['City']
     exps = df['Experience']
+
+    for city in cities.unique():
+        for exp in exps.unique():
+            if not ((df['City'] == city) & (df['Experience'] == exp)).any():
+                df.loc[len(df.index)] = [city, exp, 0, 0, 0]
 
     medians = [list(df[df['City'] == City]['Median']) for City in
                df['City'].unique()]
@@ -47,21 +58,26 @@ def heatmap_with_city_and_exp(df: pd.DataFrame) -> None:
                df['City'].unique()]
 
     fig = imshow(medians, title="Medians", y=cities.unique(), x=exps.unique(),
-                 labels=dict(x="Technology", y="City", color="[PLN]"))
+                 labels=dict(x="Technology", y="City", color="[PLN]"), color_continuous_scale="Oranges")
     st.plotly_chart(fig)
 
     fig = imshow(averages, title="Averages", y=cities.unique(), x=exps.unique(),
-                 labels=dict(x="Technology", y="City", color="[PLN]"))
+                 labels=dict(x="Technology", y="City", color="[PLN]"), color_continuous_scale="Oranges")
     st.plotly_chart(fig)
 
     fig = imshow(demands, title="Demands", y=cities.unique(), x=exps.unique(),
-                 labels=dict(x="Technology", y="City", color=""))
+                 labels=dict(x="Technology", y="City", color=""), color_continuous_scale="Oranges")
     st.plotly_chart(fig)
 
 
 def heatmap_with_city_and_tech(df: pd.DataFrame) -> None:
     cities = df['City']
     techs = df['Category/Technology']
+
+    for city in cities.unique():
+        for tech in techs.unique():
+            if not ((df['City'] == city) & (df['Category/Technology'] == tech)).any():
+                df.loc[len(df.index)] = [city, tech, 0, 0, 0]
 
     medians = [list(df[df['City'] == City]['Median']) for City in
                df['City'].unique()]
@@ -73,21 +89,26 @@ def heatmap_with_city_and_tech(df: pd.DataFrame) -> None:
                df['City'].unique()]
 
     fig = imshow(medians, title="Medians", y=cities.unique(), x=techs.unique(),
-                 labels=dict(x="Technology", y="City", color="[PLN]"))
+                 labels=dict(x="Technology", y="City", color="[PLN]"), color_continuous_scale="Oranges")
     st.plotly_chart(fig)
 
     fig = imshow(averages, title="Averages", y=cities.unique(), x=techs.unique(),
-                 labels=dict(x="Technology", y="City", color="[PLN]"))
+                 labels=dict(x="Technology", y="City", color="[PLN]"), color_continuous_scale="Oranges")
     st.plotly_chart(fig)
 
     fig = imshow(demands, title="Demands", y=cities.unique(), x=techs.unique(),
-                 labels=dict(x="Technology", y="City", color=""))
+                 labels=dict(x="Technology", y="City", color=""), color_continuous_scale="Oranges")
     st.plotly_chart(fig)
 
 
 def heatmap_with_exp_and_tech(df: pd.DataFrame) -> None:
-    cities = df['City']
+    techs = df['Category/Technology']
     exps = df['Experience']
+
+    for exp in exps.unique():
+        for tech in techs.unique():
+            if not ((df['Experience'] == exp) & (df['Category/Technology'] == tech)).any():
+                df.loc[len(df.index)] = [tech, exp, 0, 0, 0]
 
     medians = [list(df[df['Category/Technology'] == cat]['Median']) for cat in
                df['Category/Technology'].unique()]
@@ -98,16 +119,16 @@ def heatmap_with_exp_and_tech(df: pd.DataFrame) -> None:
     demands = [list(df[df['Category/Technology'] == cat]['Demand']) for cat in
                df['Category/Technology'].unique()]
 
-    fig = imshow(medians, title="Medians", y=cities.unique(), x=exps.unique(),
-                 labels=dict(x="Technology", y="Category/Technology", color="[PLN]"))
+    fig = imshow(medians, title="Medians", y=techs.unique(), x=exps.unique(),
+                 labels=dict(x="Technology", y="Category/Technology", color="[PLN]"), color_continuous_scale="Oranges")
     st.plotly_chart(fig)
 
-    fig = imshow(averages, title="Averages", y=cities.unique(), x=exps.unique(),
-                 labels=dict(x="Technology", y="Category/Technology", color="[PLN]"))
+    fig = imshow(averages, title="Averages", y=techs.unique(), x=exps.unique(),
+                 labels=dict(x="Technology", y="Category/Technology", color="[PLN]"), color_continuous_scale="Oranges")
     st.plotly_chart(fig)
 
-    fig = imshow(demands, title="Demands", y=cities.unique(), x=exps.unique(),
-                 labels=dict(x="Technology", y="Category/Technology", color=""))
+    fig = imshow(demands, title="Demands", y=techs.unique(), x=exps.unique(),
+                 labels=dict(x="Technology", y="Category/Technology", color=""), color_continuous_scale="Oranges")
     st.plotly_chart(fig)
 
 

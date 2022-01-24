@@ -97,7 +97,7 @@ def med_sal_by_tech(num_of_rows: int) -> alt.Chart:
 @st.experimental_memo(ttl=600)
 def med_sal_by_loc(num_of_rows: int) -> alt.Chart:
     df = basic_query(MED_BY_LOC).head(num_of_rows)
-    df.columns = ["city", "PLN"]
+    df.columns = ["city", " "]
     return get_chart(df, title="Median offered salary by localization", axis_x_title=" ")
 
 

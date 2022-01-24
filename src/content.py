@@ -4,6 +4,9 @@ import charts
 from streamlit import session_state as stat
 import config
 import psql_query
+import matplotlib.pyplot as plt
+import numpy as np
+import heatmaps as hm
 
 EXP_LIST = ['Trainee', 'Junior', 'Mid', 'Senior', 'Expert']
 
@@ -79,6 +82,7 @@ def funfact() -> None:
     medians = [{el[0]: el[1]} for el in df]
     medians = {k: v for d in medians for k, v in d.items()}
     st.write(f"equals {round(medians[sel2])}")
+    plt.figure()
 
 
 def greetings() -> None:
@@ -112,10 +116,15 @@ def side_bar() -> None:
 def statistics_page() -> None:
     df = psql_query.get_query_with_params(loc=stat.selected_loc, exp=stat.selected_exp,
                                           tech=stat.selected_tech, cat=stat.selected_cat)
-    df.columns = ["city", "cat or tech", "experience", "average", "median", "demand"]
+    df.columns = ["city", "cat_or_tech", "experience", "average", "median", "demand"]
+    if not stat.selected_exp:
+        df = df.loc[:, df.columns != 'experience']
     if not stat.selected_cat and not stat.selected_tech:
-        df = df.loc[:, ["city", "experience", "average", "median", "demand"]]
+        df = df.loc[:, df.columns != 'cat_or_tech']
+    if not stat.selected_loc:
+        df = df.loc[:, df.columns != 'city']
     st.write(df)
+    # hm.get_heatmap(df)
 
 
 def default_charts() -> None:

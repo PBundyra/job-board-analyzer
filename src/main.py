@@ -5,7 +5,7 @@ import content
 
 if __name__ == '__main__':
     content.init_config()
-    st.title("Placeholder na chadowy tytuł")
+    st.title("Job Boards Analyzer")
     content.side_bar()
 
     if stat.bar_but_res:

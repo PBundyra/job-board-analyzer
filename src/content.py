@@ -70,7 +70,7 @@ def metrics() -> None:
 
 
 def init_config() -> None:
-    st.set_page_config(layout="wide", page_title="Placeholder na chadowy tytuł", initial_sidebar_state="collapsed",
+    st.set_page_config(layout="wide", page_title="Job Boards Analyzer", initial_sidebar_state="collapsed",
                        page_icon=":ramen:")
     init_state()
 

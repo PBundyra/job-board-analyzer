@@ -5,7 +5,6 @@ from streamlit import session_state as stat
 import config
 import psql_query
 import matplotlib.pyplot as plt
-import numpy as np
 import heatmaps as hm
 
 EXP_LIST = ['Trainee', 'Junior', 'Mid', 'Senior', 'Expert']

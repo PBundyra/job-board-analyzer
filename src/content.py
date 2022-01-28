@@ -117,6 +117,7 @@ def side_bar() -> None:
 def statistics_page() -> None:
     df = psql_query.get_query_with_params(loc=stat.selected_loc, exp=stat.selected_exp,
                                           tech=stat.selected_tech, cat=stat.selected_cat)
+    # st.write(df)
     if df.empty:
         st.warning("No offers have been found.")
     else:

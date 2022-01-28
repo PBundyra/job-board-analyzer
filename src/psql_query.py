@@ -66,8 +66,9 @@ def get_query_with_params(loc: list = None, tech: list = None, exp: list = None,
                                         left join job_location jl on job_offer.id = jl.offer_id
                                         left join job_experience_level jel on job_offer.id = jel.offer_id
                                where city in {loc_tuple}
-                                 and( """ + cat_xor_tech + f""" in """ + f"""{cat_xor_tech_tuple}""" + f""" or {cat_xor_tech} is NULL )""" + f"""
+                                 and """ + cat_xor_tech + f""" in """ + f"""{cat_xor_tech_tuple}""" + f"""
                                  and experience_level in {exp_tuple}
+                                 and salary_to IS NOT NULL
                                group by id, city, """ + cat_xor_tech + f""", experience_level
                                order by id)
             select max(city),
